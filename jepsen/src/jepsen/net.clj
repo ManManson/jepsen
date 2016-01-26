@@ -1,7 +1,8 @@
 (ns jepsen.net
   "Controls network manipulation."
   (:use jepsen.control)
-  (:require [jepsen.control.net :as control.net]))
+  (:require [jepsen.control.net :as control.net]
+            [clojure.tools.logging :refer [debug info warn]]))
 
 (defprotocol Net
   (drop! [net test src dest] "Drop traffic between nodes src and dest.")
@@ -23,6 +24,26 @@
       (on-many (:nodes test) (su
                                (exec :iptables :-F :-w)
                                (exec :iptables :-X :-w))))))
+
+(def tc-slow-net
+  "Slows down the network."
+  (reify Net
+    (drop! [net test src dest]
+      (info "slowing down networking on " src "to " dest)
+      (on src (su (control.net/slow (control.net/ip dest)))))
+
+    (heal! [net test]
+      (on-many (:nodes test) (su (control.net/fast-force))))))
+
+(def tc-drop-packets
+  "Simulate packet drops."
+  (reify Net
+    (drop! [net test src dest]
+      (info "initiating drops on " dest)
+      (on dest (su (control.net/flaky))))
+
+    (heal! [net test]
+      (on-many (:nodes test) (su (control.net/fast-force))))))
 
 (def ipfilter
   "IPFilter rules"
