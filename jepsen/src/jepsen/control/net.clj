@@ -14,20 +14,23 @@
 (def small-partition-set #{(:n1 hosts-map) (:n2 hosts-map)})
 (def large-partition-set #{(:n3 hosts-map) (:n4 hosts-map) (:n5 hosts-map)})
 
-(defn slow
-  "Slows down the network."
+(defn fast
+  "Fixes network."
   []
-  (exec :tc :qdisc :add :dev :eth0 :root :netem :delay :50ms :10ms :distribution :normal))
+  (exec :tc :qdisc :del :dev :eth0 :root))
+
+(defn slow
+  "Slows down the network to 'dest'"
+  [dest]
+  (fast)
+  (exec :tc :qdisc :add :dev :eth0 :root :handle '1:' :prio)
+  (exec :tc :qdisc :add :dev :eth0 :parent '1:1' :root :netem :delay :50ms :10ms :distribution :normal)
+  (exec :tc :filter :add :dev :eth0 :parent '1:0' :protocol :ip :pref :55 :handle '::55' :u32 :match :ip :dst dest :flowid '2:1'))
 
 (defn flaky
   "Drops packets."
   []
   (exec :tc :qdisc :add :dev :eth0 :root :netem :loss "20%" "75%"))
-
-(defn fast
-  "Fixes network."
-  []
-  (exec :tc :qdisc :del :dev :eth0 :root))
 
 (defn reachable?
   "Can the current node ping the given node?"

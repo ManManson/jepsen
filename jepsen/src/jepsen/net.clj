@@ -29,8 +29,8 @@
   "Slows down the network."
   (reify Net
     (drop! [net test src dest]
-      (info "slowing down networking on " dest)
-      (on dest (su (exec (control.net/slow)))))
+      (info "slowing down networking on " src "to " dest)
+      (on src (su (exec (control.net/slow (control.net/ip dest))))))
 
     (heal! [net test]
       (on-many (:nodes test) (su (exec (control.net/fast)))))))
