@@ -130,6 +130,10 @@
   (batch-set-test "bridge"
                   {:conductors {:nemesis (nemesis/partitioner (comp nemesis/bridge shuffle))}}))
 
+(def bridge-test-slow-net
+  (bridge-test "bridge-slow-net"
+	       {:net net/tc-slow-net}))
+
 (def halves-test
 
   (batch-set-test "halves"
