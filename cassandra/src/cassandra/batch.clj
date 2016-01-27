@@ -22,6 +22,7 @@
              [util :as net/util]]
             [jepsen.os.debian :as debian]
             [knossos.core :as knossos]
+            [jepsen.net :as Net]
             [clojurewerkz.cassaforte.client :as cassandra]
             [clojurewerkz.cassaforte.query :refer :all]
             [clojurewerkz.cassaforte.policies :refer :all]
@@ -126,13 +127,18 @@
                                     {:set checker/set})})
          (merge-with merge {:conductors {:replayer (conductors/replayer)}} opts)))
 
-(def bridge-test
-  (batch-set-test "bridge"
-                  {:conductors {:nemesis (nemesis/partitioner (comp nemesis/bridge shuffle))}}))
+(defn bridge-test
+  ([name opts]
+   (merge (batch-set-test name
+                  {:conductors {:nemesis (nemesis/partitioner (comp nemesis/bridge shuffle))}}) opts))
+
+  ([]
+   (batch-set-test "bridge"
+                  {:conductors {:nemesis (nemesis/partitioner (comp nemesis/bridge shuffle))}})))
 
 (def bridge-test-slow-net
-  (bridge-test "bridge-slow-net"
-	       {:net net/tc-slow-net}))
+  (bridge-test "bridge slow network"
+               {:net Net/tc-slow-net}))
 
 (def halves-test
 
