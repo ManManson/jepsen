@@ -22,9 +22,11 @@
 (defn slow
   "Slows down the network to 'dest'"
   [dest]
-  (fast)
-  (exec :tc :qdisc :add :dev :eth0 :root :handle '1:' :prio)
-  (exec :tc :qdisc :add :dev :eth0 :parent '1:1' :root :netem :delay :50ms :10ms :distribution :normal)
+  ; Try to create a root qdisc and a netem rule. If it already exists - ignore an error
+  (try
+    (exec :tc :qdisc :add :dev :eth0 :root :handle '1:' :prio)
+    (exec :tc :qdisc :add :dev :eth0 :parent '1:1' :netem :delay :50ms :10ms :distribution :normal)
+    (catch RuntimeException _ ))
   (exec :tc :filter :add :dev :eth0 :parent '1:0' :protocol :ip :pref :55 :handle '::55' :u32 :match :ip :dst dest :flowid '2:1'))
 
 (defn flaky
