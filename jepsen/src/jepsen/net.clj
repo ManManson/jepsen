@@ -30,20 +30,20 @@
   (reify Net
     (drop! [net test src dest]
       (info "slowing down networking on " src "to " dest)
-      (on src (su (exec (control.net/slow (control.net/ip dest))))))
+      (on src (su (control.net/slow (control.net/ip dest)))))
 
     (heal! [net test]
-      (on-many (:nodes test) (su (exec (control.net/fast)))))))
+      (on-many (:nodes test) (su (control.net/fast-force))))))
 
 (def tc-drop-packets
   "Simulate packet drops."
   (reify Net
     (drop! [net test src dest]
       (info "initiating drops on " dest)
-      (on dest (su (exec (control.net/flaky)))))
+      (on dest (su (control.net/flaky))))
 
     (heal! [net test]
-      (on-many (:nodes test) (su (exec (control.net/fast)))))))
+      (on-many (:nodes test) (su (control.net/fast-force))))))
 
 (def ipfilter
   "IPFilter rules"
