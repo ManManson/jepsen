@@ -31,8 +31,8 @@
   [dest]
   ; Try to create a root and a netem qdiscs. If they already exist - ignore an error
   (try
-    ((exec :tc :qdisc :add :dev :eth0 :root :handle "1:" :prio)
-     (exec :tc :qdisc :add :dev :eth0 :parent "1:1" :netem :delay :50ms :10ms :distribution :normal))
+    (exec :tc :qdisc :add :dev :eth0 :root :handle "1:" :prio)
+    (exec :tc :qdisc :add :dev :eth0 :parent "1:1" :netem :delay :50ms :10ms :distribution :normal)
     (catch RuntimeException _)
     (finally (exec :tc :filter :add :dev :eth0 :parent "1:" :protocol :ip :pref :55 :u32 :match :ip :dst dest :flowid "1:1"))))
 
