@@ -10,7 +10,7 @@
 (deftest ^:batch ^:steady batch-bridge
   (run-test! bridge-test))
 
-(deftest ^:batch batch-bridge-slow-net
+(deftest ^:batch ^:slow-network batch-bridge-slow-net
   (run-test! bridge-test-slow-net))
 
 (deftest ^:batch ^:steady batch-isolate-node
