@@ -20,4 +20,5 @@
                    :decommission :decommission
                    :counter :counter
                    :clock :clock
+                   :slow-network :slow-network
                    :all (constantly true)})
