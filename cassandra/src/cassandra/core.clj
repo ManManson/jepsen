@@ -409,7 +409,13 @@
   []
   (test-aware-node-start-stopper
    safe-mostly-small-nonempty-subset
-   (fn start [test node] (meh (c/su (c/exec :killall :-9 :java))) [:killed node])
+
+   (fn start [test node]
+     (meh (c/exec :service :scylla-jmx :stop))
+     (while (.contains (c/exec :ps :-ef) "java")
+       (Thread/sleep 100))
+     (meh (c/exec :killall :-9 :scylla)))
+
    (fn stop  [test node] (meh (guarded-start! node test)) [:restarted node])))
 
 (defn cassandra-test
