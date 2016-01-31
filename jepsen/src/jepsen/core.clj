@@ -297,8 +297,15 @@
                           (iterate inc 0) ; PIDs
                           clients)]       ; Clients
 
-                                        ; Wait for workers to complete
-        (dorun (map deref workers))
+        ; If a background job has been requested - run it
+        (let [background_proc (ref 0)]
+          (if (contains? test :background_job)
+            (ref-set (background_proc
+                       (future ((with-thread-name "Background job"
+                         (:background_job test)))))))
+
+                                          ; Wait for workers to complete
+          (dorun (map deref (conj workers @background_proc))))
 
                                         ; Download logs
         (snarf-logs! test)
