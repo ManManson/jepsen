@@ -297,8 +297,11 @@
                           (iterate inc 0) ; PIDs
                           clients)]       ; Clients
 
-                                        ; Wait for workers to complete
-        (dorun (map deref workers))
+        ; If a background job has been requested - run it
+        (if (contains? test :sidekick)
+          (let [background_proc (future (with-thread-name "Sidekick task" ((:sidekick test) test)))]
+            (dorun (map deref (conj workers background_proc))))
+          (dorun (map deref workers)))
 
                                         ; Download logs
         (snarf-logs! test)
