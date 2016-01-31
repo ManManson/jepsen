@@ -298,14 +298,12 @@
                           clients)]       ; Clients
 
         ; If a background job has been requested - run it
-        (let [background_proc (ref 0)]
-          (if (contains? test :background_job)
-            (ref-set (background_proc
-                       (future ((with-thread-name "Background job"
-                         (:background_job test)))))))
-
-                                          ; Wait for workers to complete
-          (dorun (map deref (conj workers @background_proc))))
+        (if (contains? test :background_job)
+          (let [background_proc
+            (future (with-thread-name "Background job"
+              ((:background_job test) test)))]
+            (dorun (map deref (conj workers background_proc))))
+          (dorun (map deref workers)))
 
                                         ; Download logs
         (snarf-logs! test)
