@@ -1,4 +1,5 @@
 (ns cassandra.batch
+  (:use [clojure.java.shell :only [sh]])
   (:require [clojure [pprint :refer :all]
              [string :as str]
              [set :as set]]
@@ -112,6 +113,16 @@
   []
   (->BatchSetClient nil))
 
+(defn run-cassandra-stress
+  [test]
+  (let [cass_log_name "cassandra-stress.log"
+        cass_log_tmp  (str "/tmp/" cass_log_name)
+        cass_log_store (.getCanonicalPath (store/path! test cass_log_name))]
+    (sh "scylla-cassandra-stress" "write" "no-warmup" "duration=5m" "-rate" "threads=500" "-mode" "native" "cql3" "-node" (dns-resolve :n1) "-log" (str "file=" cass_log_tmp))
+    (info (str "Copying " cass_log_tmp " to " cass_log_store))
+    (sh "cp" cass_log_tmp cass_log_store)))
+
+
 (defn batch-set-test
   [name opts]
   (merge (cassandra-test (str "batch set " name)
@@ -138,7 +149,8 @@
 
 (def bridge-test-slow-net
   (bridge-test "bridge slow network"
-               {:net Net/tc-slow-net}))
+               {:net Net/tc-slow-net
+                :sidekick run-cassandra-stress}))
 
 (def halves-test
 
