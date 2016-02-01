@@ -298,10 +298,8 @@
                           clients)]       ; Clients
 
         ; If a background job has been requested - run it
-        (if (contains? test :background_job)
-          (let [background_proc
-            (future (with-thread-name "Background job"
-              ((:background_job test) test)))]
+        (if (contains? test :sidekick)
+          (let [background_proc (future (with-thread-name "Sidekick task" ((:sidekick test) test)))]
             (dorun (map deref (conj workers background_proc))))
           (dorun (map deref workers)))
 
