@@ -125,7 +125,7 @@
 
 (def nonserializable-keys
   "What keys in a test can't be serialized to disk?"
-  [:db :os :net :client :checker :nemesis :generator :model :bootstrap :decommission :conductors])
+  [:db :os :net :client :checker :nemesis :generator :model :bootstrap :decommission :conductors :sidekick])
 
 (defn load
   "Loads a specific test by name and time."
