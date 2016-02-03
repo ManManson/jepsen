@@ -10,9 +10,6 @@
 (deftest ^:batch ^:steady batch-bridge
   (run-test! bridge-test))
 
-(deftest ^:batch ^:slow-network batch-bridge-slow-net
-  (run-test! bridge-test-slow-net))
-
 (deftest ^:batch ^:steady batch-isolate-node
   (run-test! isolate-node-test))
 
@@ -25,7 +22,7 @@
 (deftest ^:batch ^:steady batch-flush-compact
   (run-test! flush-compact-test))
 
-(deftest ^:clock batch-clock-drift
+(deftest ^:batch ^:clock batch-clock-drift
   (run-test! clock-drift-test))
 
 ;; Bootstrapping tests
@@ -41,7 +38,7 @@
 (deftest ^:batch ^:bootstrap batch-crash-subset-bootstrap
   (run-test! crash-subset-test-bootstrap))
 
-(deftest ^:clock batch-clock-drift-bootstrap
+(deftest ^:batch ^:clock ^:bootstrap batch-clock-drift-bootstrap
   (run-test! clock-drift-test-bootstrap))
 
 ;; Decommission tests
@@ -57,5 +54,57 @@
 (deftest ^:batch ^:decommission batch-crash-subset-decommission
   (run-test! crash-subset-test-decommission))
 
-(deftest ^:clock batch-clock-drift-decommission
+(deftest ^:batch ^:clock ^:decommission batch-clock-drift-decommission
   (run-test! clock-drift-test-decommission))
+
+;;; slow network tests
+;; Steady state cluster tests
+(deftest ^:batch ^:steady ^:slow-network batch-bridge-slow-net
+  (run-test! bridge-test-slow-net))
+
+(deftest ^:batch ^:steady ^:slow-network batch-isolate-node-slow-net
+  (run-test! isolate-node-test-slow-net))
+
+(deftest ^:batch ^:steady ^:slow-network batch-halves-slow-net
+  (run-test! halves-test-slow-net))
+
+(deftest ^:batch ^:steady ^:slow-network batch-crash-subset-slow-net
+  (run-test! crash-subset-test-slow-net))
+
+(deftest ^:batch ^:steady ^:slow-network batch-flush-compact-slow-net
+  (run-test! flush-compact-test-slow-net))
+
+(deftest ^:batch ^:clock ^:slow-network batch-clock-drift-slow-net
+  (run-test! clock-drift-test-slow-net))
+
+;; Bootstrapping tests
+(deftest ^:batch ^:bootstrap ^:slow-network batch-bridge-bootstrap-slow-net
+  (run-test! bridge-test-bootstrap-slow-net))
+
+(deftest ^:batch ^:bootstrap ^:slow-network batch-isolate-node-bootstrap-slow-net
+  (run-test! isolate-node-test-bootstrap-slow-net))
+
+(deftest ^:batch ^:bootstrap ^:slow-network batch-halves-bootstrap-slow-net
+  (run-test! halves-test-bootstrap-slow-net))
+
+(deftest ^:batch ^:bootstrap ^:slow-network batch-crash-subset-bootstrap-slow-net
+  (run-test! crash-subset-test-bootstrap-slow-net))
+
+(deftest ^:batch ^:clock ^:bootstrap ^:slow-network batch-clock-drift-bootstrap-slow-net
+  (run-test! clock-drift-test-bootstrap-slow-net))
+
+;; Decommission tests
+(deftest ^:batch ^:decommission ^:slow-network batch-bridge-decommission-slow-net
+  (run-test! bridge-test-decommission-slow-net))
+
+(deftest ^:batch ^:decommission ^:slow-network batch-isolate-node-decommission-slow-net
+  (run-test! isolate-node-test-decommission-slow-net))
+
+(deftest ^:batch ^:decommission ^:slow-network batch-halves-decommission-slow-net
+  (run-test! halves-test-decommission-slow-net))
+
+(deftest ^:batch ^:decommission ^:slow-network batch-crash-subset-decommission-slow-net
+  (run-test! crash-subset-test-decommission-slow-net))
+
+(deftest ^:batch ^:clock ^:decommission ^:slow-network batch-clock-drift-decommission-slow-net
+  (run-test! clock-drift-test-decommission-slow-net))
