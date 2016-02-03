@@ -114,6 +114,7 @@
   (->BatchSetClient nil))
 
 (defn run-cassandra-stress
+  "Run a cassandra-stress test as a sidekick background process"
   [test]
   (let [cass_log_name "cassandra-stress.log"
         cass_log_tmp  (str "/tmp/" cass_log_name)
@@ -138,22 +139,12 @@
                                     {:set checker/set})})
          (merge-with merge {:conductors {:replayer (conductors/replayer)}} opts)))
 
-(defn bridge-test
-  ([name opts]
-   (merge (batch-set-test name
-                  {:conductors {:nemesis (nemesis/partitioner (comp nemesis/bridge shuffle))}}) opts))
-
-  ([]
-   (batch-set-test "bridge"
-                  {:conductors {:nemesis (nemesis/partitioner (comp nemesis/bridge shuffle))}})))
-
-(def bridge-test-slow-net
-  (bridge-test "bridge slow network"
-               {:net Net/tc-slow-net
-                :sidekick run-cassandra-stress}))
+;; iptables based tests
+(def bridge-test
+  (batch-set-test "bridge"
+                 {:conductors {:nemesis (nemesis/partitioner (comp nemesis/bridge shuffle))}}))
 
 (def halves-test
-
   (batch-set-test "halves"
                   {:conductors {:nemesis (nemesis/partition-random-halves)}}))
 
@@ -227,3 +218,60 @@
   (batch-set-test "clock drift decommission"
                   {:conductors {:nemesis (nemesis/clock-scrambler 10000)
                                 :decommissioner (conductors/decommissioner)}}))
+
+;; tc-slow-net based tests
+(defn slow-net-test
+  [test]
+  (merge test {
+        :net Net/tc-slow-net
+        :sidekick run-cassandra-stress
+        :name (str (:name test) " slow network")}))
+
+
+(def bridge-test-slow-net
+  (slow-net-test bridge-test))
+
+(def halves-test-slow-net
+  (slow-net-test halves-test))
+
+(def isolate-node-test-slow-net
+  (slow-net-test isolate-node-test))
+
+(def crash-subset-test-slow-net
+  (slow-net-test crash-subset-test))
+
+(def clock-drift-test-slow-net
+  (slow-net-test clock-drift-test))
+
+(def flush-compact-test-slow-net
+  (slow-net-test flush-compact-test))
+
+(def bridge-test-bootstrap-slow-net
+  (slow-net-test bridge-test-bootstrap))
+
+(def halves-test-bootstrap-slow-net
+  (slow-net-test halves-test-bootstrap))
+
+(def isolate-node-test-bootstrap-slow-net
+  (slow-net-test isolate-node-test-bootstrap))
+
+(def crash-subset-test-bootstrap-slow-net
+  (slow-net-test crash-subset-test-bootstrap))
+
+(def clock-drift-test-bootstrap-slow-net
+  (slow-net-test clock-drift-test-bootstrap))
+
+(def bridge-test-decommission-slow-net
+  (slow-net-test bridge-test-decommission))
+
+(def halves-test-decommission-slow-net
+  (slow-net-test halves-test-decommission))
+
+(def isolate-node-test-decommission-slow-net
+  (slow-net-test isolate-node-test-decommission))
+
+(def crash-subset-test-decommission-slow-net
+  (slow-net-test crash-subset-test-decommission))
+
+(def clock-drift-test-decommission-slow-net
+  (slow-net-test clock-drift-test-decommission))
