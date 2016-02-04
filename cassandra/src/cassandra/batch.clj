@@ -237,15 +237,6 @@
 (def isolate-node-test-slow-net
   (slow-net-test isolate-node-test))
 
-(def crash-subset-test-slow-net
-  (slow-net-test crash-subset-test))
-
-(def clock-drift-test-slow-net
-  (slow-net-test clock-drift-test))
-
-(def flush-compact-test-slow-net
-  (slow-net-test flush-compact-test))
-
 (def bridge-test-bootstrap-slow-net
   (slow-net-test bridge-test-bootstrap))
 
@@ -254,12 +245,6 @@
 
 (def isolate-node-test-bootstrap-slow-net
   (slow-net-test isolate-node-test-bootstrap))
-
-(def crash-subset-test-bootstrap-slow-net
-  (slow-net-test crash-subset-test-bootstrap))
-
-(def clock-drift-test-bootstrap-slow-net
-  (slow-net-test clock-drift-test-bootstrap))
 
 (def bridge-test-decommission-slow-net
   (slow-net-test bridge-test-decommission))
@@ -270,8 +255,3 @@
 (def isolate-node-test-decommission-slow-net
   (slow-net-test isolate-node-test-decommission))
 
-(def crash-subset-test-decommission-slow-net
-  (slow-net-test crash-subset-test-decommission))
-
-(def clock-drift-test-decommission-slow-net
-  (slow-net-test clock-drift-test-decommission))
