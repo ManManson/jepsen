@@ -68,15 +68,6 @@
 (deftest ^:batch ^:steady ^:slow-network batch-halves-slow-net
   (run-test! halves-test-slow-net))
 
-(deftest ^:batch ^:steady ^:slow-network batch-crash-subset-slow-net
-  (run-test! crash-subset-test-slow-net))
-
-(deftest ^:batch ^:steady ^:slow-network batch-flush-compact-slow-net
-  (run-test! flush-compact-test-slow-net))
-
-(deftest ^:batch ^:clock ^:slow-network batch-clock-drift-slow-net
-  (run-test! clock-drift-test-slow-net))
-
 ;; Bootstrapping tests
 (deftest ^:batch ^:bootstrap ^:slow-network batch-bridge-bootstrap-slow-net
   (run-test! bridge-test-bootstrap-slow-net))
@@ -86,12 +77,6 @@
 
 (deftest ^:batch ^:bootstrap ^:slow-network batch-halves-bootstrap-slow-net
   (run-test! halves-test-bootstrap-slow-net))
-
-(deftest ^:batch ^:bootstrap ^:slow-network batch-crash-subset-bootstrap-slow-net
-  (run-test! crash-subset-test-bootstrap-slow-net))
-
-(deftest ^:batch ^:clock ^:bootstrap ^:slow-network batch-clock-drift-bootstrap-slow-net
-  (run-test! clock-drift-test-bootstrap-slow-net))
 
 ;; Decommission tests
 (deftest ^:batch ^:decommission ^:slow-network batch-bridge-decommission-slow-net
@@ -103,8 +88,3 @@
 (deftest ^:batch ^:decommission ^:slow-network batch-halves-decommission-slow-net
   (run-test! halves-test-decommission-slow-net))
 
-(deftest ^:batch ^:decommission ^:slow-network batch-crash-subset-decommission-slow-net
-  (run-test! crash-subset-test-decommission-slow-net))
-
-(deftest ^:batch ^:clock ^:decommission ^:slow-network batch-clock-drift-decommission-slow-net
-  (run-test! clock-drift-test-decommission-slow-net))
