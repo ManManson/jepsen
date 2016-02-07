@@ -1,4 +1,5 @@
 (ns cassandra.batch
+  (:use [clojure.java.shell :only [sh]])
   (:require [clojure [pprint :refer :all]
              [string :as str]
              [set :as set]]
@@ -22,6 +23,7 @@
              [util :as net/util]]
             [jepsen.os.debian :as debian]
             [knossos.core :as knossos]
+            [jepsen.net :as Net]
             [clojurewerkz.cassaforte.client :as cassandra]
             [clojurewerkz.cassaforte.query :refer :all]
             [clojurewerkz.cassaforte.policies :refer :all]
@@ -111,6 +113,17 @@
   []
   (->BatchSetClient nil))
 
+(defn run-cassandra-stress
+  "Run a cassandra-stress test as a sidekick background process"
+  [test]
+  (let [cass_log_name "cassandra-stress.log"
+        cass_log_tmp  (str "/tmp/" cass_log_name)
+        cass_log_store (.getCanonicalPath (store/path! test cass_log_name))]
+    (sh "scylla-cassandra-stress" "write" "no-warmup" "duration=5m" "-rate" "threads=500" "-mode" "native" "cql3" "-node" (dns-resolve :n1) "-log" (str "file=" cass_log_tmp))
+    (info (str "Copying " cass_log_tmp " to " cass_log_store))
+    (sh "cp" cass_log_tmp cass_log_store)))
+
+
 (defn batch-set-test
   [name opts]
   (merge (cassandra-test (str "batch set " name)
@@ -126,12 +139,12 @@
                                     {:set checker/set})})
          (merge-with merge {:conductors {:replayer (conductors/replayer)}} opts)))
 
+;; iptables based tests
 (def bridge-test
   (batch-set-test "bridge"
                   {:conductors {:nemesis (nemesis/partitioner (comp nemesis/bridge shuffle))}}))
 
 (def halves-test
-
   (batch-set-test "halves"
                   {:conductors {:nemesis (nemesis/partition-random-halves)}}))
 
@@ -205,3 +218,40 @@
   (batch-set-test "clock drift decommission"
                   {:conductors {:nemesis (nemesis/clock-scrambler 10000)
                                 :decommissioner (conductors/decommissioner)}}))
+
+;; tc-slow-net based tests
+(defn slow-net-test
+  [test]
+  (merge test {
+        :net Net/tc-slow-net
+        :sidekick run-cassandra-stress
+        :name (str (:name test) " slow network")}))
+
+
+(def bridge-test-slow-net
+  (slow-net-test bridge-test))
+
+(def halves-test-slow-net
+  (slow-net-test halves-test))
+
+(def isolate-node-test-slow-net
+  (slow-net-test isolate-node-test))
+
+(def bridge-test-bootstrap-slow-net
+  (slow-net-test bridge-test-bootstrap))
+
+(def halves-test-bootstrap-slow-net
+  (slow-net-test halves-test-bootstrap))
+
+(def isolate-node-test-bootstrap-slow-net
+  (slow-net-test isolate-node-test-bootstrap))
+
+(def bridge-test-decommission-slow-net
+  (slow-net-test bridge-test-decommission))
+
+(def halves-test-decommission-slow-net
+  (slow-net-test halves-test-decommission))
+
+(def isolate-node-test-decommission-slow-net
+  (slow-net-test isolate-node-test-decommission))
+
