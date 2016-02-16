@@ -219,7 +219,9 @@
     (net/fast-force)
 ;   (c/exec :service :scylla-server :start)
     (c/exec "/root/scylla-run.sh" :--log-to-syslog :0 :--log-to-stdout :1 :--default-log-level :info :--network-stack :posix :-m :8G :--collectd :0 :--poll-mode :--developer-mode :1)
+    (info node "Started scylla")
     (c/exec :service :scylla-jmx :start)
+    (info node "Started scylla-jmx")
    ))
 
 (defn guarded-start!
@@ -241,10 +243,12 @@
 ;   (c/exec :service :scylla-jmx :stop))
    (meh (c/exec :service :scylla-jmx :stop))
    (while (.contains (c/exec :ps :-ef) "java")
-     (Thread/sleep 100))
+     (Thread/sleep 100)
+     (info node "java is still running"))
    (meh (c/exec :killall :scylla))
    (while (.contains (c/exec :ps :-ef) "scylla")
-     (Thread/sleep 100)))
+     (Thread/sleep 100)
+     (info node "scylla is still running")))
   (info node "has stopped ScyllaDB"))
 
 (defn wipe!
@@ -253,7 +257,8 @@
   (stop! node)
   (info node "deleting data files")
   (c/su
-   (meh (c/exec "/root/wipe.sh"))))
+   (meh (c/exec "/root/wipe.sh"))
+   (info node "deleted data files")))
 
 (defn db
   "New ScyllaDB run"
