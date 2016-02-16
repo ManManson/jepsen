@@ -218,7 +218,7 @@
     (nemesis/set-time! 0)
     (net/fast-force)
 ;   (c/exec :service :scylla-server :start)
-    (c/exec "/root/scylla-run.sh" :--log-to-syslog :0 :--log-to-stdout :1 :--default-log-level :trace :--network-stack :posix :-m :8G :--collectd :0 :--poll-mode :--developer-mode :1)
+    (c/exec "/root/scylla-run.sh" :--log-to-syslog :0 :--log-to-stdout :1 :--default-log-level :info :--network-stack :posix :-m :8G :--collectd :0 :--poll-mode :--developer-mode :1)
     (c/exec :service :scylla-jmx :start)
    ))
 
