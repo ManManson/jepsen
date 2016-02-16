@@ -243,11 +243,11 @@
 ;   (c/exec :service :scylla-jmx :stop))
    (meh (c/exec :service :scylla-jmx :stop))
    (while (.contains (c/exec :ps :-ef) "java")
-     (Thread/sleep 100)
+     (Thread/sleep 1000
      (info node "java is still running"))
    (meh (c/exec :killall :scylla))
    (while (.contains (c/exec :ps :-ef) "scylla")
-     (Thread/sleep 100)
+     (Thread/sleep 1000
      (info node "scylla is still running")))
   (info node "has stopped ScyllaDB"))
 
