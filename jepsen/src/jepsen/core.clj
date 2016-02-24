@@ -303,9 +303,6 @@
             (dorun (map deref (conj workers background_proc))))
           (dorun (map deref workers)))
 
-                                        ; Download logs
-        (snarf-logs! test)
-
                                         ; Unregister our history
         (swap! (:active-histories test) disj history)
 
@@ -407,31 +404,35 @@
 
               ; Setup
               (with-os test
-                (with-db test
-                  (binding [generator/*threads*
-                            ; TODO: handle old style of just one nemesis
-                            (into (-> test :conductors keys)
-                                  (range (:concurrency test)))]
-                    (util/with-relative-time
-                      (with-conductors test
-                        ; Run a single case
-                        (let [test (assoc test :history (run-case! test))
-                              ; Remove state
-                              test (dissoc test
-                                           :barrier
-                                           :active-histories
-                                           :sessions)]
+                (let [test_result
+                  (with-db test
+                    (binding [generator/*threads*
+                              ; TODO: handle old style of just one nemesis
+                              (into (-> test :conductors keys)
+                                    (range (:concurrency test)))]
+                      (util/with-relative-time
+                        (with-conductors test
+                          ; Run a single case
+                          (let [test (assoc test :history (run-case! test))
+                                ; Remove state
+                                test (dissoc test
+                                             :barrier
+                                             :active-histories
+                                             :sessions)]
 
-                          (info "Run complete, writing")
-                          (when (:name test) (store/save! test))
-
-                          (info "Analyzing")
-                          (let [test (assoc test :results (checker/check-safe
-                                                            (:checker test)
-                                                            test
-                                                            (:model test)
-                                                            (:history test)))]
-
-                            (info "Analysis complete")
+                            (info "Run complete, writing")
                             (when (:name test) (store/save! test))
-                          test))))))))))))))
+
+                            (info "Analyzing")
+                            (let [test (assoc test :results (checker/check-safe
+                                                              (:checker test)
+                                                              test
+                                                              (:model test)
+                                                              (:history test)))]
+
+                              (info "Analysis complete")
+                              (when (:name test) (store/save! test))
+                            test))))))]
+                  ; Download logs
+                  (snarf-logs! test)
+                  test_result)))))))))
