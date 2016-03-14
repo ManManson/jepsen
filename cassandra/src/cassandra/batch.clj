@@ -182,11 +182,13 @@
                    :conductors {:nemesis (nemesis/partition-random-node)
                                 :bootstrapper (conductors/bootstrapper)}}))
 
-(def crash-subset-test-bootstrap
+(defn crash-subset-test-bootstrap
+  [opts]
   (batch-set-test "crash bootstrap"
-                  {:bootstrap (atom #{:n4 :n5})
+           (merge {:bootstrap (atom #{:n4 :n5})
                    :conductors {:nemesis (crash-nemesis)
-                                :bootstrapper (conductors/bootstrapper)}}))
+                                :bootstrapper (conductors/bootstrapper)}}
+                  opts)))
 
 (def clock-drift-test-bootstrap
   (batch-set-test "clock drift bootstrap"
@@ -218,6 +220,10 @@
   (batch-set-test "clock drift decommission"
                   {:conductors {:nemesis (nemesis/clock-scrambler 10000)
                                 :decommissioner (conductors/decommissioner)}}))
+
+(def crash-subset-test-bootstrap-stress
+  (let [my_test (crash-subset-test-bootstrap {:sidekick run-cassandra-stress})]
+     (assoc my_test :name (str (:name my_test) " stress"))))
 
 ;; tc-slow-net based tests
 (defn slow-net-test
