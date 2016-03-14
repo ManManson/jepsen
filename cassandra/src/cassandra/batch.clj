@@ -219,6 +219,11 @@
                   {:conductors {:nemesis (nemesis/clock-scrambler 10000)
                                 :decommissioner (conductors/decommissioner)}}))
 
+(def crash-subset-test-bootstrap-stress
+  (merge crash-subset-test-bootstrap
+    {:sidekick run-cassandra-stress
+     :name (str (:name crash-subset-test-bootstrap) " stress")}))
+
 ;; tc-slow-net based tests
 (defn slow-net-test
   [test]

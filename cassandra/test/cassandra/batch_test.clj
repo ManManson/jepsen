@@ -41,6 +41,9 @@
 (deftest ^:clock batch-clock-drift-bootstrap
   (run-test! clock-drift-test-bootstrap))
 
+(deftest ^:batch ^:bootstrap crash-subset-bootstrap-stress
+  (run-test! crash-subset-test-bootstrap-stress))
+
 ;; Decommission tests
 (deftest ^:batch ^:decommission batch-bridge-decommission
   (run-test! bridge-test-decommission))
