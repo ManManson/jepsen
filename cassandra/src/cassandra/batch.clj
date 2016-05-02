@@ -194,11 +194,13 @@
                                 :bootstrapper (conductors/bootstrapper)}}
                   opts)))
 
-(def crash-subset-test-bootstrap
+(defn crash-subset-test-bootstrap
+  [opts]
   (batch-set-test "crash bootstrap"
-                  {:bootstrap (atom #{:n4 :n5})
+           (merge {:bootstrap (atom #{:n4 :n5})
                    :conductors {:nemesis (crash-nemesis)
-                                :bootstrapper (conductors/bootstrapper)}}))
+                                :bootstrapper (conductors/bootstrapper)}}
+                  opts)))
 
 (def clock-drift-test-bootstrap
   (batch-set-test "clock drift bootstrap"
@@ -238,7 +240,7 @@
                                 :decommissioner (conductors/decommissioner)}}))
 
 (def crash-subset-test-bootstrap-stress
-  (merge crash-subset-test-bootstrap
+  (crash-subset-test-bootstrap
     {:sidekick run-cassandra-stress
      :name (str (:name crash-subset-test-bootstrap) " stress")}))
 
