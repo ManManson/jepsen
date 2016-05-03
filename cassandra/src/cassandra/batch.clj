@@ -240,17 +240,16 @@
                                 :decommissioner (conductors/decommissioner)}}))
 
 (def crash-subset-test-bootstrap-stress
-  (crash-subset-test-bootstrap
-    {:sidekick run-cassandra-stress
-     :name (str (:name crash-subset-test-bootstrap) " stress")}))
+  (let [my_test (crash-subset-test-bootstrap {:sidekick run-cassandra-stress})]
+     (assoc my_test :name (str (:name my_test) " stress"))))
 
 ;; tc-slow-net based tests
 (defn slow-net-test
   [test]
-    (test {
-        :net Net/tc-slow-net
-        :sidekick run-cassandra-stress
-        :name (str (:name test) " slow network")}))
+    (let [my_test (test {
+                  :net Net/tc-slow-net
+                  :sidekick run-cassandra-stress})]
+      (assoc my_test :name (str (:name my_test) " slow network"))))
 
 
 (def bridge-test-slow-net
