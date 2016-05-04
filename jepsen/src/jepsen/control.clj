@@ -99,10 +99,10 @@
 
 (defn throw-on-nonzero-exit
   "Throws when the result of an SSH result has nonzero exit status."
-  [result]
-  (if (zero? (:exit result))
-    result
-    (throw (RuntimeException. (str (:err result) "\n" (:out result))))))
+  [commands result]
+    (if (zero? (:exit result))
+      result
+      (throw (RuntimeException. (str *host* "@" commands (:err result) "\n" (:out result))))))
 
 (defn just-stdout
   "Returns the stdout from an ssh result, trimming any newlines at the end."
@@ -124,7 +124,7 @@
        wrap-sudo
        wrap-trace
        ssh*
-       throw-on-nonzero-exit
+       (throw-on-nonzero-exit commands)
        just-stdout))
 
 (defn exec
